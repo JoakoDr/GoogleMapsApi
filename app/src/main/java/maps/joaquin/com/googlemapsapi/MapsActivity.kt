@@ -3,11 +3,14 @@ package maps.joaquin.com.googlemapsapi
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.ContextCompat.*
@@ -21,12 +24,17 @@ import android.widget.ArrayAdapter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.*
+import android.support.v4.app.ShareCompat.IntentBuilder
+import com.google.android.gms.location.places.Place
+import com.google.android.gms.location.places.ui.PlacePicker
+
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener {
 
     var latitude:Double? = 0.0
     var longitude:Double? = 0.0
+    val PLACE_PICKER_REQUEST = 1
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onMyLocationClick(p0: Location) {
         Toast.makeText(this, "Current location:\n" + p0, Toast.LENGTH_LONG).show()
@@ -47,6 +55,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMyLoca
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        val searchbutton = findViewById<FloatingActionButton>(R.id.searchbutton)
+        searchbutton.setOnClickListener { view ->
+            val builder = PlacePicker.IntentBuilder()
+            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST)
+            Snackbar.make(view, "Here's a PlacePicker", Snackbar.LENGTH_LONG)
+                .setAction("Action", null)
+                .show()
+
+
+        }
 
 
     }
@@ -99,6 +117,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMyLoca
                 }
 
 
+            }
+        }
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                var place:Place = PlacePicker.getPlace(data, this)
+                Toast.makeText(this, "Ey", Toast.LENGTH_LONG).show()
+                mMap.addMarker(MarkerOptions().position(place.latLng))
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(place.latLng))
             }
         }
     }
