@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">GoogleMapsApi</string>
+    <string name="title_activity_maps">Map</string>
+    <string-array name="tipos">
+        <item>Terrain</item>
+        <item>Hybrid</item>
+        <item>Satellite</item>
+        <item>Normal</item>
+        <item>None</item>
+    </string-array>
+</resources>
